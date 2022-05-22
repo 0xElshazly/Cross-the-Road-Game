@@ -4,4 +4,8 @@
  
  
 ![image](https://user-images.githubusercontent.com/77213993/169667406-2058360e-223e-4b13-9b85-3d5099b2266e.png)
-![image](https://user-images.githubusercontent.com/77213993/169667408-4e0e1aee-0e00-46b8-ac38-3156fc6e9243.png)
+<br>
+![image](https://user-images.githubusercontent.com/77213993/169715863-9af5574a-4560-492c-adf1-54b40a5f31a8.png)
+<br>
+<h3> Camera </h3>
+![image](https://user-images.githubusercontent.com/77213993/169715920-6753e9ac-b1f6-4ebf-a473-fb0dd6282d85.png)
