@@ -7,10 +7,14 @@
 #include<iostream>
 #include<string>
 
+/*
+  l  - n - m
+*/
+
 //............................ GLOBAL VARIABLES .............................
-unsigned int texture;  //texture 
+unsigned int texture;           //texture 
 int width, height, nrChannels;  //texture
-unsigned char* data = NULL;  //texture
+unsigned char* data = NULL;     //texture
 bool fullScreen, carbumbed = false;    //specialKeyboard 
 float ratio /*reshape*/, angle, eyey = 60, eyez = 5, eyex = 50, upx = 50, upy = 0, upz = -70; // mydraw
 ///////ball variables and score
@@ -18,7 +22,7 @@ int ball_x = 50, ball_y = 2, ball_z = -5, attemptss = 3;
 //level counter
 float level = 1;
 ///////cars
-int fast = 30;
+int fast = 20;
 GLfloat x1, x2;
 float car1, car2, car3;       // animation variable
 GLfloat anglePyramid = 0.0f;  // Rotational angle for pyramid [NEW]
@@ -30,6 +34,7 @@ float C_x1 = -2.0, C_x2 = 2.0, C_x1s, C_x2s, speed = 0.005;
 static int flag = 1;
 bool pause = false;
 float xd, yd, Distance;
+
 
 //............................... FUNCTIONS PROTOTYPES ............................
 void background();
@@ -43,10 +48,11 @@ void check(unsigned char* data);
 void initRendering();
 void drawBall(int, int, int);
 void car();
-void update();
+void coliision();
 void attempts();
 void startscreen();
 void mouse(int, int, int, int);
+
 
 //................................. MAIN FUNCTION ......................................
 int main(int argc, char** argv) {
@@ -102,6 +108,7 @@ void startscreen() {
 	{
 		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, msg2[i]);
 	}
+	
 	glutSwapBuffers();
 
 }
@@ -110,21 +117,19 @@ void startscreen() {
 void mydraw() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	gluLookAt(eyex, eyey, eyez,
-		upx, upy, upz,
-		0, 1, 0);
+	gluLookAt(eyex, eyey, eyez, upx, upy, upz, 0, 1, 0);
 
 	glTranslatef(0, 0, 0); //orinin point of the game box
 
 	drawBall(ball_x, ball_y, ball_z);
 	car();
-	update();
+	coliision();
 	attempts();
 
 	//........................road
 	load(1);
 	glBegin(GL_QUADS);
-	glColor3f(.66, 0.63, .6);
+	//glColor3f(.66, 0.63, .6);
 	glTexCoord2d(0.0f, 0.0f);
 	glVertex3f(100, 0, 0);
 	glTexCoord2d(5.0f, 0.0f);
@@ -200,6 +205,8 @@ void drawBall(int ball_x, int ball_y, int ball_z)
 
 	glColor3f(0.6, 0.2, 0.6);
 	
+
+
 	/* comment the material*/
 	GLfloat amb[] = { 0.25f,0.20725f,0.20725f,1.0f };
 	GLfloat diff[] = { 1.0f,0.829f,0.829f,1.0f };
@@ -211,17 +218,27 @@ void drawBall(int ball_x, int ball_y, int ball_z)
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine);
 
 
+
 	glPushMatrix();
 
+	// Center Ball
 	glTranslatef(ball_x, ball_y, ball_z);
 
-	glutSolidSphere(2, 50, 50);
+	// To draw circle
+	//              radious x y
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, (GLuint)"ball.jpg");
+
+	glutSolidSphere(3, 40, 40);
+	//glutSolidTeapot(2);
+
+	//glutSolidCone();
 
 	glPopMatrix();
 }
 
 //................................... collision update FUNCTION .................................
-void update()
+void coliision()
 {
 	if (ball_z < -10 && ball_z > -60)
 	{
@@ -302,6 +319,7 @@ void car() {
 
 	for (int i = 0; i < 5; i++)
 	{
+
 		int y1, y2, z1, z2;
 		// Roads 1,3,5 direction: left -> right
 		if (i % 2)
@@ -310,6 +328,7 @@ void car() {
 			//.................................... Car1 ..................................
 			//------------------Top part-------------------//
 			x1 = 2 + car1, x2 = 10 + car1, y1 = 6.0, y2 = 10.0, z1 = (-12 - 10 * i), z2 = (-15 - 10 * i);
+			
 			glBegin(GL_QUADS);                // Begin drawing the color cube with 6 quads
 			glColor3f(0.4f, 0.3f, 0.8f);
 			// Define vertices in counter-clockwise (CCW) order with normal pointing out
@@ -633,7 +652,7 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 
 	//////////////start new game/////////////////////
-	if (key == 'n')
+	if (key == 'n' || key == 'N')
 	{
 		fast = 30;
 		attemptss = 3;
@@ -642,7 +661,7 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 	glutPostRedisplay();
 	///////////////go to the main page////////////////////////
-	if (key == 'b')
+	if (key == 'm' || key == 'M')
 	{
 		attemptss = 3;
 		glutDisplayFunc(startscreen);
@@ -651,7 +670,7 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 
 	//////////////start new level/////////////////////
-	if (key == 't')
+	if (key == 'l'|| key == 'L')
 	{
 		ball_x = 50, ball_y = 2, ball_z = -5; //return to the origin
 		eyey = 60, eyez = 5, eyex = 50;
@@ -663,7 +682,7 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 	glutPostRedisplay();
 
-	if (key == 'a')
+	/*if (key == 'a')
 	{
 		upx -= .9 * cos(.1);
 		upz -= .9 * sin(.1);
@@ -680,6 +699,34 @@ void keyboard(unsigned char key, int x, int y) {
 	if (key == 's') {
 		eyez += 2;
 		eyey += .3 * abs(cos(angle));
+	}*/
+
+	if (key == 'd') {
+		if (ball_x < 100)
+		{
+			ball_x += 2;
+		}
+	}
+	if (key == 'a') {
+		if (ball_x > 0)
+		{
+			ball_x -= 2;
+		}
+	}
+	if (key == 's') {
+		if (ball_z < -5)
+		{
+			ball_z += 2;
+			eyez += 1;
+		}
+	}
+	if (key == 'w') {
+		if (ball_z > -65)
+		{
+			ball_z -= 2;
+			eyez -= 1;
+		}
+
 	}
 }
 
@@ -688,16 +735,49 @@ void specialKeyboard(int key, int x, int y) {
 
 	if (key == GLUT_KEY_F1) {
 		fullScreen = !fullScreen;
-		if (fullScreen)
+		if (fullScreen) {
 			glutFullScreen();
+		}
 		else {
-			glutPositionWindow(10, 10);
-			glutReshapeWindow(600, 600);
+			glutReshapeWindow(GetSystemMetrics(SM_CXSCREEN) / 2,
+				GetSystemMetrics(SM_CYSCREEN) / 2);
+			glutPositionWindow(GetSystemMetrics(SM_CXSCREEN) / 4,
+				GetSystemMetrics(SM_CYSCREEN) / 4);
 		}
 	}
 
+	/*if (key == GLUT_KEY_F1) {
+		fullScreen = !fullScreen;
+		if (fullScreen)
+			glutFullScreen();
+		else {
+			glutPositionWindow(100, 100);
+			glutReshapeWindow(600, 600);
+		}
+	}*/
+
 	//............moving the ball..............
+
+	if (key == GLUT_KEY_LEFT)
+	{
+		upx -= .9 * cos(.1);
+		upz -= .9 * sin(.1);
+	}
 	if (key == GLUT_KEY_RIGHT) {
+		upx += .9 * cos(.1);
+		upz += .9 * sin(.1);
+	}
+	if (key == GLUT_KEY_UP)
+	{
+		eyez -= 2;
+		eyey += .3 * abs(cos(angle));
+	}
+	if (key == GLUT_KEY_DOWN) {
+		eyez += 2;
+		eyey += .3 * abs(cos(angle));
+	}
+	
+	/*if (key == GLUT_KEY_RIGHT) {
 		if (ball_x < 100)
 		{
 			ball_x += 2;
@@ -723,7 +803,7 @@ void specialKeyboard(int key, int x, int y) {
 			eyez -= 1;
 		}
 
-	}
+	}*/
 
 }
 
@@ -784,7 +864,7 @@ void attempts() {
 
 		glColor3f(0.1, 0.1, 0.1);
 		glRasterPos3f(10, 30, -68);
-		char scoremsg2[] = "press b -> main page";
+		char scoremsg2[] = "press m or M -> main page";
 		for (int i = 0; i <= strlen(scoremsg2); i++)
 		{
 			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, scoremsg2[i]);
@@ -792,7 +872,7 @@ void attempts() {
 
 		glColor3f(0.1, 0.1, 0.1);
 		glRasterPos3f(10, 20, -68);
-		char scoremsg3[] = "press n -> new game";
+		char scoremsg3[] = "press n or N -> new game";
 		for (int i = 0; i <= strlen(scoremsg3); i++)
 		{
 			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, scoremsg3[i]);
@@ -809,7 +889,7 @@ void attempts() {
 			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, winmsg[i]);
 		}
 		glRasterPos3f(10, 20, -69);
-		char Levelmsg[] = { "Press t to move to the next level!" };
+		char Levelmsg[] = { "Press l or L to move to the next level!" };
 		for (int i = 0; i <= strlen(Levelmsg); i++)
 		{
 			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, Levelmsg[i]);
@@ -822,8 +902,15 @@ void attempts() {
 void mouse(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		glClearColor(1, 1, 1, 1);
+
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		glClearColor(.5, .7, .3, 1);
+	}
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		glClearColor(.5, .7, .3, 1);
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP) {
+		glClearColor(1, 1, 1, 1);
 	}
 }
