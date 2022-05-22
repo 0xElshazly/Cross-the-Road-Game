@@ -8,4 +8,5 @@
 ![image](https://user-images.githubusercontent.com/77213993/169715863-9af5574a-4560-492c-adf1-54b40a5f31a8.png)
 <br>
 <h3> Camera </h3>
-![image](https://user-images.githubusercontent.com/77213993/169715920-6753e9ac-b1f6-4ebf-a473-fb0dd6282d85.png)
+![image](https://user-images.githubusercontent.com/77213993/169715987-44060a92-ea47-43ff-8116-81667bd5c9f3.png)
+
